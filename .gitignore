@@ -1,0 +1,25 @@
+# downloaded / generated data (not redistributed - see README "Data")
+data/
+bridge_map.csv
+bridge_report.txt
+bridge_hexmap.png
+calibration_*.npz
+rates_*.npz
+results/
+# run outputs
+loop_*.mp4
+loop_*.csv
+result_*.json
+loom_sweep_*.csv
+loom_sweep_*.png
+dodge_trials.csv
+duck_*.npz
+duck_*.png
+eye_check*.png
+*.log
+*.zip
+__pycache__/
+*.pyc
+.venv*/
+# keep curated demo media
+!media/*

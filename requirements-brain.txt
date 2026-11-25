@@ -1,0 +1,5 @@
+# brain environment (inside ~/flyduck/Drosophila_brain_model/.venv)
+# install the Shiu et al. model's own requirements first, then:
+setuptools<81      # brian2 2.5.x imports pkg_resources
+pandas
+pyarrow

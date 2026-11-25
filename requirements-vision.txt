@@ -1,0 +1,4 @@
+# vision environment (~/flyduck/.venv-vision), Python 3.9-3.12
+flyvis
+scipy
+pandas

@@ -1,0 +1,121 @@
+{
+  "alignment": {
+    "right": {
+      "matrix_uv_to_pq": [
+        [
+          0,
+          -1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "mean_cosine": 0.886,
+      "runner_up_cosine": 0.801,
+      "per_subtype_cosine": {
+        "T4a": 0.9,
+        "T4b": 0.99,
+        "T4c": 0.761,
+        "T4d": 0.94,
+        "T5a": 0.985,
+        "T5b": 0.945,
+        "T5c": 0.81,
+        "T5d": 0.753
+      },
+      "flywire_pd_angles_deg": {
+        "T4a": 156.4,
+        "T4b": -20.1,
+        "T4c": 83.8,
+        "T4d": -88.2,
+        "T5a": 160.9,
+        "T5b": -14.2,
+        "T5c": 83.4,
+        "T5d": -84.3
+      }
+    },
+    "left": {
+      "matrix_uv_to_pq": [
+        [
+          0,
+          -1
+        ],
+        [
+          -1,
+          0
+        ]
+      ],
+      "mean_cosine": 0.88,
+      "runner_up_cosine": 0.812,
+      "per_subtype_cosine": {
+        "T4a": 0.896,
+        "T4b": 0.982,
+        "T4c": 0.759,
+        "T4d": 0.932,
+        "T5a": 0.988,
+        "T5b": 0.924,
+        "T5c": 0.808,
+        "T5d": 0.752
+      },
+      "flywire_pd_angles_deg": {
+        "T4a": 157.0,
+        "T4b": -17.2,
+        "T4c": 83.9,
+        "T4d": -86.8,
+        "T5a": 160.0,
+        "T5b": -10.9,
+        "T5c": 83.5,
+        "T5d": -84.2
+      }
+    }
+  },
+  "centre_pq": {
+    "right": [
+      1,
+      0
+    ],
+    "left": [
+      0,
+      0
+    ]
+  },
+  "camera": {
+    "right_eye": {
+      "mirror_horizontally_first": true,
+      "then_rotate_ccw_deg": 20.8,
+      "axis_mismatch_deg": 22.9,
+      "boxeye_up_xy": [
+        -0.534,
+        0.846
+      ],
+      "boxeye_front_to_back_xy": [
+        -0.987,
+        -0.162
+      ]
+    },
+    "left_eye": {
+      "mirror_horizontally_first": false,
+      "then_rotate_ccw_deg": 21.7,
+      "axis_mismatch_deg": 22.1,
+      "boxeye_up_xy": [
+        -0.541,
+        0.841
+      ],
+      "boxeye_front_to_back_xy": [
+        -0.983,
+        -0.184
+      ]
+    },
+    "note": "Split the duck camera image into left and right halves. For each half: optionally mirror left-right, then rotate counter-clockwise by the given angle, then pass to BoxEye. Image y axis = up."
+  },
+  "unmatched_flyvis_types": [
+    "Mi3",
+    "Mi11",
+    "Mi12",
+    "Tm5Y",
+    "Tm28",
+    "Tm30",
+    "TmY13"
+  ],
+  "n_mapped": 32811
+}
