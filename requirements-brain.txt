@@ -3,3 +3,4 @@
 setuptools<81      # brian2 2.5.x imports pkg_resources
 pandas
 pyarrow
+cython<3            # Brian2 2.5.x compiles with Cython 0.29 (Cython 3 fails its test compile)

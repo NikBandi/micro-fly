@@ -68,13 +68,13 @@ First milestone: looming escape. Obstacles wanted: pillars, ramps, maze, gaps/ju
 ## Column data (searched 2026-11-23)
 - Official file: https://storage.googleapis.com/flywire-data/codex/data/fafb/783/column_assignment.csv.gz
   (columns: root_id, p, q, ...; Zhao hex "eye coordinates"; both eyes per OpticLobe.jl comments).
-  Blocked from Claude's workspace (proxy 403) -> user downloads it. Backup: Zenodo record 17030629.
+  Blocked from the build workspace (proxy 403) -> user downloads it. Backup: Zenodo record 17030629.
 - Codex: 23,452 columnar neurons of 31 types in 796 columns (right optic lobe). Non-columnar flyvis types
   need separate handling.
 - GitHub hsseung/OpticLobe.jl (reachable): data/RightEyeGrid.csv (p,q -> column id, right eye) and
   data/columns_Mi1.csv (Mi1 root_id per column). Hex axes: +p anterodorsal, +q posterodorsal (right eye).
 
-## Bridge step 1 DONE (2026-11-23) — /home/claude/bridge
+## Bridge step 1 DONE (2026-11-23) — the build workspace
 - build_bridge.py -> bridge_map.csv (32,811 FlyWire neurons -> flyvis cell index), bridge_meta.json, bridge_report.txt
 - validate_bridge.py -> leave-one-out check (connectivity placement within 1 column: 96-100%), 0 duplicate
   flyvis cells per eye, bridge_hexmap.png.
@@ -278,3 +278,122 @@ First milestone: looming escape. Obstacles wanted: pillars, ramps, maze, gaps/ju
   dodge_trials.py: N fresh-process loom trials per side (final settings baked in) + pass per side + none;
   prints table (outcome, gap, escape side, deg, warning, moved, fell) + dodged/false-alarm totals, dodge_trials.csv.
   Tested with stubs. User asked: step 1 (trials) then step 2 (GitHub packaging).
+- STEP 2 (GitHub) draft in workspace the build workspace -> flyduck_repo_draft.zip: repo root = ~/flyduck/bridge
+  (flat scripts), README (pipeline, findings, setup for 3 envs, data table, run commands, credits, limitations),
+  MIT LICENSE (holder 'Sri Nikhil' - confirm), .gitignore (data/ + outputs excluded, media/ kept),
+  requirements-vision/brain.txt, docs/development_log.md (= PROGRESS), tools/export_flyvis_inputs.py (UNTESTED:
+  recreates data/flyvis_nodes.csv + fib25 json - compare with user's existing files). Results table to fill from
+  dodge_trials. Open: public/private, demo gif from loop_loom_dodge_rv500.mp4.
+- REPO NAME (user, 2026-11-24): micro-fly -> https://github.com/NikBandi/micro-fly (public, empty when checked).
+  README title renamed; clone into ~/flyduck/bridge; *.zip added to .gitignore. micro-fly_repo.zip sent.
+  Plan: git init inside the user's existing ~/flyduck/bridge, review `git status --short`, then first push.
+- *** DODGE TRIALS (user, 2026-11-24, final settings, r/v 160, 3/side, fresh processes): dodged 6/6 (right gaps +2.3/+2.4/
+  +4.3 cm, left +2.1/+1.4/+1.2), escape on threatened side 6/6, escape at 27-45 deg, warning +403..+663 ms, moved 22-25 cm,
+  false alarms 0/3 (pass right, pass left, none), falls 0. Left-side margins smaller. README results table filled.
+- REPO STAGED (user): git init -b main in ~/flyduck/bridge, `git status` = 23 clean files (scripts, docs, LICENSE,
+  requirements, media/dodge_rv500.gif 4.9 MB from last 6 s of loop_loom_dodge_rv500.mp4). Not yet committed/pushed.
+  User's data/ has only the annotations TSV: bridge_map.csv was built in the build workspace and copied over, so
+  tools/export_flyvis_inputs.py + a full build_bridge rebuild (needs column_assignment.csv.gz) are still unverified.
+
+## MILESTONE 2: steering around obstacles (started 2026-11-24)
+- Connectome check (Shiu weights, signed input fraction from visual projection neurons per eye): DNa01/DNa02/DNa03
+  get net INHIBITION from the same-side eye and weak excitation from the opposite eye (DNa01 R: right-eye VPN -0.047,
+  left-eye +0.006 at 1 hop; biggest single input LT51 (same side) -320). If DNa01/02 = turn toward their own side
+  (Rayshubskiy 2020), an object on the right should favour LEFT turning = avoidance. DNb05 is strongly driven by the
+  same-side eye (+0.27; LPLC4 +2053, LLPC2 +666). DNa02's top inputs are central-complex (PFL3) - goal steering.
+- Stage 1 (milestone2_stage1.zip, tested with stubs): fly_loop.py scenarios pillar (dark cylinder r 3 cm, 0.5 m tall,
+  --pillar-ahead 0.6 m, --pillar-offset 0.06 m toward --side; no collision, gap via mj_geomDistance) and corridor
+  (striped walls 4 cm stripes, half width --corridor-half 0.18 m, 3 m long, invisible proxy boxes for the gap);
+  --walk VX (default 0.3 for these), --no-escape (log escape, keep walking); status line shows pillar distance/bearing
+  + DNa01/DNa02 L/R; result json adds totals per group/side, obstacle_gap_cm, end_x_cm, end_side_cm.
+  brain_worker READOUT + DNa03, DNb01, DNb05, LPLC4, LT51. steer_probe.py: open walk / pillar R / pillar L / corridor
+  (7 s each, --no-escape), table of R/L spikes + pillar-side contrast + per-second R-L near the pillar.
+  Waiting for user's probe run.
+- PROBE RUN 1 (user, 2026-11-24, walk 0.3, no steering): the duck does NOT walk straight - identical body path in all
+  4 runs: 64 cm forward, drifted +14.4 cm right, turned -26 deg (right) in 7 s (~0.09 m/s). So the pillar ended up on
+  the duck's LEFT in both pillar runs (pillar R bearing +3 deg at 1 s, then -11..-137 deg; gap +0.5 cm, just missed;
+  pillar L clear +11.3), corridor: walked into the right wall (-5.6 cm). Pillar-side contrast therefore confounded.
+  Still informative: as the pillar nears on the left (4-6 s, 10-20 cm, -36..-98 deg) left LC4 (+500-1100/s), left
+  LPLC4 (~100/s), left DNb05 (30-42/s), left DNp02, left DNp11 rise -> same-side visual pathway (as connectome said
+  for DNb05). DNa01/DNa02/DNa03 show only small differences (<15/s), DNa02 R>L in every run incl. open (baseline).
+  Open walk baseline asymmetries (veer-related or bridge): HSS L 507 vs R 5, HSN R 445 vs L 131, DNa02 R 199/L 66,
+  LPLC4 R 271/L 24. ESCAPE SIGNAL crosses threshold 2 at ~0.3 s in EVERY walking run (DNp01 R ~12/s while walking)
+  -> walking self-motion would trigger constant escapes; needs fixing before escape + walking are combined.
+- Fix: --hold-heading K (default 2 when walking): yaw cmd = -K x heading error (stand-in for haltere/vestibular
+  course control; steering from the brain will be added on top). Stub test with veer: -12 deg -> -2 deg.
+  milestone2_stage1b.zip (fly_loop.py) -> rerun probe.
+- PROBE RUN 2 (heading hold K=2, user 2026-11-24): straight walk (64 cm fwd, drift +1 cm, -1 deg). pillar R HIT -3.4,
+  pillar L HIT -2.6, corridor gap 0.0 (odd - check CSV). Pillar-side contrast (+ = fires on the pillar's side):
+  LC4 +4654, LPLC4 +745, LPLC2 +298, DNb05 +244, DNp02 +212, LT51 +166, HSN +413, HSE +225, HSS +146, DNp11 +91,
+  DNa01 +60, DNa02 +60, DNb01 +9, DNa03 -4, DNp01 -40. Everything visual is IPSILATERAL to the pillar.
+  DNb05 (a descending neuron) R-L per s, open baseline ~+5: pillar R +14/+13/+13/+53/+41 at 31/21/11/5/4 cm;
+  pillar L +10/+3/-40/-63 at 32/22/13/3 cm -> clean but late (separates ~13-20 cm). LPLC4 (baseline +33/s): pillar R
+  +78/+68/+61/+145 at 31/21/11/5 cm vs pillar L +61/+3/-132/-224 at 32/22/13/3 -> separates from ~21 cm.
+  DNa01/DNa02 slightly ipsilateral (would turn TOWARD the pillar if they mean ipsilateral turning; cf. flies' dark
+  stripe fixation) and small. Walking escape false alarm persists (threshold crossed at ~0.3-0.4 s every run).
+- Stage 2 (milestone2_stage2.zip): --steer GROUP[,GROUP] --steer-gain G --steer-window 300 --steer-bias B:
+  yaw = hold-heading + G * ((R-L spikes/s over window) - B), + = left -> turns away from the side that fires more.
+  Sign bug caught in stub test (first version turned toward) and fixed. steer_probe --label NAME passes extra args.
+  Plan: A = --steer DNb05 --steer-gain 0.04 --steer-bias 5; B = --steer LPLC4 --steer-gain 0.008 --steer-bias 33.
+- *** FIRST FLY-BRAIN STEERING (user 2026-11-25): both pillar runs now CLEAR with either readout (without steering
+  both were HITs -3.4/-2.6). A = DNb05 (gain 0.04, bias 5): pillar R +4.7 cm (drift -8.6 = moved left, away),
+  pillar L +6.0 (drift +9.2 = right, away); open walk drift +2.7, -3 deg (bias OK). B = LPLC4 (gain 0.008, bias 33):
+  pillar R +1.3, pillar L +7.1, open +2.0. Single runs. CHOSEN: A (DNb05 is a real descending neuron, better margin).
+  Corridor gap 0.0 at t=0.5 s with the duck centred (off 0.9 cm) -> measurement bug: mj_geomDistance box(thin proxy)
+  vs duck mesh returned 0 on the user's MuJoCo (worked on 4.0.1 here). FIX: corridor gap now computed from the duck's
+  own mesh vertices vs the wall planes (+-corridor_half, from 0.1 m ahead). steerB corridor real collision likely
+  (drift +26 cm). steer_probe --repeats N (extra pillar runs per side; prints cleared X/Y).
+  milestone2_stage2b.zip. Next: DNb05 x3 per side + corridor with/without steering.
+- *** PILLAR AVOIDANCE STATS (user 2026-11-25, DNb05 gain 0.04 bias 5): CLEARED 6/6 (R +3.8/+4.0/+4.5 cm, moved
+  7.6-8.8 cm left; L +7.6/+11.0/+8.7, moved 11-15 cm right). Without steering both sides HIT. Open walk with steering
+  drift +3.3 cm, -2 deg. Corridor with DNb05 steering (new vertex gap test): CLEAR +0.2 cm, drift +8.3 (barely).
+  No-steer corridor run result pending. Escape signal still crosses threshold while walking (0.22-0.46 s).
+- FAST BRAIN (fast_brain.zip = brain_worker.py): profiling showed ~0.3 s Brian2 set-up per net.run() call, i.e. most of
+  the time with 20 ms steps. New worker: ONE long net.run; IPC happens inside a network_operation at the start of each
+  20 ms bin (reports the finished chunk's counts, blocks for the next chunk; EOF -> net.stop). --codegen auto|cython|numpy
+  (auto = Cython if CythonCodeObject.is_available()). Benchmark here (brian2 2.11, 2 cores, 1 s sim, random 10 Hz drive):
+  many 20 ms runs numpy 38.6 s / cython 23.9 s; one long run numpy 29.4 s / cython 8.6 s; numpy and cython gave
+  IDENTICAL spike totals (same seed). Full fly_loop + real brain_worker (cython) + stub eyes with real root ids: runs,
+  exits cleanly. User needs Cython in the brain venv.
+- Cython on user's machine: brain venv had Cython 3.3.1 -> Brian2 2.5.1 test compile fails (ImportError). Fixed with
+  `uv pip install --python ~/flyduck/Drosophila_brain_model/.venv/bin/python "cython<3"` (0.29.37) -> C ready: True.
+  Numpy-mode single-run worker: pillar run 207 s (was ~220-240). 7th pillar dodge: +8.3 cm. Cython timing pending.
+- Stage 3 (milestone2_stage3.zip: fly_loop.py, walk_trials.py): --escape-gate GROUP:N (escape needs escape count >=
+  threshold AND GROUP >= N spikes same side in the 100 ms window; LPLC2 was 0-5 spikes per 7 s of plain walking).
+  --loom-start T (ball launch time); while walking the ball aims at the head's predicted impact position (head +
+  velocity over last 0.5 s x time left, frozen at launch) - stub test: ball went through the eye (0 cm).
+  escapes list + n_escapes in result json. walk_trials.py: open / pillar R / pillar L / ball R+L while walking
+  (rv 160, start 6 deg, launch 2 s) / standing ball R; all with DNb05 steering + LPLC2:2 gate.
+- C mode speed (from walk_trials run stamps, user): ~1.5-2 min per 7 s run with Cython vs ~3.5-4 min before.
+  (The separate two-run timing test was never reported.)
+- WALK TRIALS m2 (user 2026-11-25, C mode: ~1.5-2 min per run, batch ~10 min): open 1 false escape (left 2.18 s);
+  pillar R CLEAR +26.1 but 3 escapes (first right 3.48 s, turned +104); pillar L CLEAR +42.5, 3 escapes (first left
+  1.68 s at ~44 cm, early); ball R walking HIT -3.4 (escape right at 4.86 s, ~200 ms before impact - late);
+  ball L walking MISSED +6.1 but first escape on the WRONG side (right 4.48 s); standing ball MISSED +2.6 (escape 6.34 s,
+  ~490 ms warning, M1 intact). => LPLC2:2 gate cut false alarms from constant to ~1/run but walking still disturbs
+  escape timing/side. escape_report.py (reads loop_*_m2_*.csv: totals, per-second R/L of DNp01/02/11, LPLC2, LC4,
+  DNb05, and 120 ms before each escape) sent for diagnosis.
+- escape_report on m2 (user): walking baseline escape counts DNp01 R ~13/s, DNp02 L ~9/s, DNp11 L ~10/s -> window sum
+  sits at 2-3 constantly; LPLC2 is the only discriminator (open 0/3 in 7 s, pillar R 68/4, pillar L 0/16, stand ball
+  24/7) and gate 2 was passed by 2 stray LPLC2 spikes (open false alarm). Standing loom escape at 37 deg had only
+  LPLC2 2 in window. Walking-ball runs: aim frozen at launch (t=2) but the duck changed course (DNb05 R>L transient at
+  2-3 s in ALL walking runs: 9-22 vs 4-8 -> left turn) -> ball R reached only 20 deg at nominal ttc 197 ms; ball L
+  apparently crossed in front and came in from the RIGHT (LPLC2 R 22 in 4-5 s) -> 'wrong side' was test geometry.
+- Stage 3b: --home-deg 15 (walking loom: ball re-aims at predicted impact point every frame until it is 15 deg wide,
+  then flies straight; stub test: duck veering 93 deg still hit, 3 cm from eye); with a gate, escape SIDE = side with
+  more gate-group (LPLC2) spikes; walk_trials default gate 3. milestone2_stage3b.zip.
+- *** WALK + STEER + ESCAPE WORKS (user 2026-11-25, m2b: gate LPLC2>=3, LPLC2 picks side, homing ball 15 deg): 6/6 as
+  wanted. open walk 0 escapes (drift +1.8, -6 deg); pillar R CLEAR +22.4 (3 escapes, all right side, first 3.72 s);
+  pillar L CLEAR +28.7 (2 escapes, left, first 3.22 s); walking ball R MISSED +2.1 (escape right at 61 deg, +277 ms);
+  walking ball L MISSED +6.0 (left, 44 deg, +417 ms); standing ball MISSED +2.4 (right, 41 deg, +443 ms; M1 intact).
+  Near pillars the escape (not just steering) does the avoiding. Single runs; margins 2-6 cm on balls.
+- WRAP-UP MILESTONE 2 (user 2026-11-25: "wrap up milestone 2 for today and update everything on github; README with
+  stages + images/videos"). walk_trials --repeats N (tags _2,_3; per-scene tally; walk_trials_<label>_summary.json).
+  tools/make_media.py (GIFs from loop_*.mp4: m1_escape_not_enough, m1_pass_no_escape, m2_pillar_no_steer_vs_steer
+  (hstack probe_right vs dnb05_right), m2_walk_steer_escape_pillar (m2b), m2_walking_ball_dodge (m2b, hero); PNGs
+  m1_loom_sweep, eye_check_duck_loom). tools/fill_readme.py fills README between M2_RESULTS markers. README rewritten
+  into 10 stages with media. requirements-brain + cython<3. .gitignore + M2 outputs. Repo zip micro-fly_m2.zip.
+- m2b REPEAT (user accidentally re-ran by pasting old output into the shell, 2026-11-25): again 6/6 as wanted: open 0
+  escapes (+4.1, -5 deg); pillar R CLEAR +29.5 (3 escapes, right, first 3.06 s); pillar L CLEAR +28.2 (2, left, 3.50 s);
+  ball R MISSED +3.4 (right, 58 deg, +277 ms); ball L MISSED +1.0 (left, 49 deg, +337 ms); stand ball MISSED +2.4
+  (identical to before: same trigger step). This overwrote the m2b videos used for the README GIFs (still valid).

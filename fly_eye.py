@@ -217,7 +217,7 @@ if args.stimulus == "directions":
             best = (mirror, np.degrees(delta), resid)
     print(f"Best fit: mirror={best[0]}, extra rotation {best[1]:.0f}°, "
           f"remaining average error {best[2]:.0f}°.")
-    print("Paste this table to Claude before changing anything.")
+    print("Check this table before changing anything.")
     raise SystemExit
 
 # --- this movie ------------------------------------------------------------------------

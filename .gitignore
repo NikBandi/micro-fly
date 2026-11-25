@@ -23,3 +23,8 @@ __pycache__/
 .venv*/
 # keep curated demo media
 !media/*
+# Milestone 2 outputs
+steer_*.csv
+walk_trials_*.csv
+walk_trials_*.json
+*_result.txt
